@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Опрос — сложности с таблицами и документами</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+[hidden]{ display:none !important; }
+
+:root{
+  --card:#F6F6F6;
+  --ink:#1A0A0F;
+  --muted:#808080;
+  --line:#B0B0B0;
+  --accent:#E30613;
+  --accent-dark:#C00510;
+}
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:#FFFFFF; }
+body{
+  font-family:"Montserrat",system-ui,sans-serif;
+  font-size:16px; line-height:1.5; color:var(--ink);
+  padding:24px;
+}
+.wrap{ max-width:860px; margin:0 auto; }
+
+/* ============ КАРТОЧКА-ОПРОС ============ */
+.srv{
+  background:var(--card); border-radius:16px;
+  padding:clamp(24px,4vw,40px) clamp(20px,4vw,44px);
+}
+.srv-leave{ animation:srvOut 200ms ease both; }
+@keyframes srvOut{ to{ opacity:0; transform:translateY(-10px); } }
+
+.srv__head{
+  display:flex; justify-content:space-between; align-items:baseline;
+  gap:12px; flex-wrap:wrap; margin:0 0 10px;
+}
+.srv__overline{
+  margin:0; font-weight:800; font-size:13px;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+}
+.rdot{
+  display:inline-block; width:6px; height:6px; border-radius:50%;
+  background:var(--accent); margin-left:8px; vertical-align:middle;
+}
+.srv__hint{ font-size:13px; color:var(--muted); }
+.srv__title{
+  font-weight:800; font-size:clamp(20px,3vw,26px);
+  line-height:1.35; margin:0 0 18px;
+}
+
+/* варианты (мультивыбор) */
+.srv__list{ list-style:none; margin:0 0 22px; padding:0; }
+.srv__item + .srv__item{ border-top:1px solid var(--line); }
+.srv__item label{
+  display:flex; align-items:flex-start; gap:14px;
+  padding:14px 6px; cursor:pointer; transition:background .22s;
+}
+.srv__item label:hover{ background:#EFEFEF; }
+
+.srv__input{ position:absolute; opacity:0; width:1px; height:1px; overflow:hidden; }
+.srv__box{
+  flex:none; width:24px; height:24px; margin-top:1px;
+  background:#FFFFFF; border:1px solid var(--line); border-radius:6px;
+  position:relative; transition:background .22s, border-color .22s;
+}
+.srv__box::after{
+  content:""; position:absolute; left:6px; top:8px; width:11px; height:5px;
+  border-left:2px solid var(--accent); border-bottom:2px solid var(--accent);
+  transform:rotate(-45deg) scale(0); transition:transform .2s ease;
+}
+.srv__input:checked ~ .srv__box{
+  background:var(--card); border-color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent);
+}
+.srv__input:checked ~ .srv__box::after{ transform:rotate(-45deg) scale(1); }
+.srv__input:checked ~ .srv__text{ color:var(--muted); }
+.srv__input:focus-visible ~ .srv__box{ outline:2px solid var(--accent); outline-offset:2px; }
+.srv__text{ transition:color .22s; }
+
+/* кнопка */
+.srv__btn{
+  font:700 16px "Montserrat",system-ui,sans-serif;
+  padding:15px 30px; border:0; border-radius:12px; cursor:pointer;
+  background:var(--card); color:var(--muted);
+  transition:background .24s, color .24s;
+}
+.srv__btn:not(:disabled){ background:var(--accent); color:#FFFFFF; }
+.srv__btn:not(:disabled):hover{ background:var(--accent-dark); }
+.srv__btn:disabled{ cursor:not-allowed; }
+.srv__btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+/* ============ БЛОК С ГЛАВАМИ ============ */
+.srv-fb{
+  background:var(--card); border-radius:16px;
+  padding:clamp(24px,4vw,40px) clamp(20px,4vw,44px);
+  display:flex; flex-direction:column; justify-content:center;
+}
+.srv-fb-appear{ animation:fbIn 300ms ease both; }
+@keyframes fbIn{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+
+.srv-fb__lead{ margin:0 0 20px; max-width:70ch; }
+
+.srv-fb__tools{ list-style:none; margin:0; padding:0; }
+.srv-fb__tool{
+  display:grid; grid-template-columns:auto 1fr;
+  gap:14px; align-items:start; padding:14px 6px;
+}
+.srv-fb__tool + .srv-fb__tool{ border-top:1px solid var(--line); }
+.srv-fb__num{
+  font-weight:800; font-size:13px; letter-spacing:.08em;
+  color:var(--muted); padding-top:3px; white-space:nowrap;
+}
+.srv-fb__text{ margin:0; max-width:64ch; }
+
+@media (max-width:560px){
+  body{ padding:16px; }
+  .srv__btn{ width:100%; }
+}
+@media (prefers-reduced-motion:reduce){
+  *{ animation:none !important; transition:none !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ШАГ 1: опрос (мультивыбор) -->
+  <section class="srv" id="srvSec" aria-label="Опрос: сложности с таблицами и документами">
+    <div class="srv__head">
+      <p class="srv__overline">Опрос<span class="rdot" aria-hidden="true"></span></p>
+      <span class="srv__hint">можно выбрать несколько</span>
+    </div>
+    <h2 class="srv__title">С какими сложностями ты сталкиваешься, когда работа заводит тебя
+      в таблицы и документы?</h2>
+
+    <ul class="srv__list">
+      <li class="srv__item"><label>
+        <input class="srv__input" type="checkbox">
+        <span class="srv__box" aria-hidden="true"></span>
+        <span class="srv__text">Нужно что-то посчитать в таблице — сумму, количество, проценты —
+          но не знаю, как это сделать формулой;</span>
+      </label></li>
+      <li class="srv__item"><label>
+        <input class="srv__input" type="checkbox">
+        <span class="srv__box" aria-hidden="true"></span>
+        <span class="srv__text">Избегаю задач в Excel, потому что боюсь сломать таблицу или получить
+          неправильный результат;</span>
+      </label></li>
+      <li class="srv__item"><label>
+        <input class="srv__input" type="checkbox">
+        <span class="srv__box" aria-hidden="true"></span>
+        <span class="srv__text">Вижу формулы в чужих файлах и не понимаю, что они делают и откуда
+          берутся цифры;</span>
+      </label></li>
+      <li class="srv__item"><label>
+        <input class="srv__input" type="checkbox">
+        <span class="srv__box" aria-hidden="true"></span>
+        <span class="srv__text">Трачу часы на приведение данных к порядку: ФИО в разном виде,
+          телефоны в разных форматах, даты без стандарта;</span>
+      </label></li>
+      <li class="srv__item"><label>
+        <input class="srv__input" type="checkbox">
+        <span class="srv__box" aria-hidden="true"></span>
+        <span class="srv__text">Забываю, где в Word нужные функции: оглавление, нумерация страниц,
+          колонтитулы, альбомная страница;</span>
+      </label></li>
+      <li class="srv__item"><label>
+        <input class="srv__input" type="checkbox">
+        <span class="srv__box" aria-hidden="true"></span>
+        <span class="srv__text">Делаю оформление вручную, потому что не знаю автоматических способов.</span>
+      </label></li>
+    </ul>
+
+    <button class="srv__btn" id="srvBtn" type="button" disabled aria-disabled="true">Показать решение</button>
+  </section>
+
+  <!-- ШАГ 2: три главы, без доп. ОС -->
+  <section class="srv-fb" id="srvFb" hidden aria-label="Главы модуля">
+    <p class="srv__overline" style="margin:0 0 12px;">Фидбек<span class="rdot" aria-hidden="true"></span></p>
+    <p class="srv-fb__lead">Каждая сложность закрывается своей главой модуля:</p>
+
+    <ul class="srv-fb__tools">
+      <li class="srv-fb__tool">
+        <span class="srv-fb__num">01<span class="rdot" aria-hidden="true"></span></span>
+        <p class="srv-fb__text"><strong>Глава 1. Как перевести рабочую задачу в формулу?</strong> —
+          составление формул в Excel и приведение данных к единому виду;</p>
+      </li>
+      <li class="srv-fb__tool">
+        <span class="srv-fb__num">02<span class="rdot" aria-hidden="true"></span></span>
+        <p class="srv-fb__text"><strong>Глава 2. Формула под микроскопом</strong> — разбор готовых
+          формул, их улучшение и исправление ошибок;</p>
+      </li>
+      <li class="srv-fb__tool">
+        <span class="srv-fb__num">03<span class="rdot" aria-hidden="true"></span></span>
+        <p class="srv-fb__text"><strong>Глава 3. Где эта кнопка?</strong> — оформление документов
+          и работа с интерфейсом Word.</p>
+      </li>
+    </ul>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var srv  = document.getElementById('srvSec');
+  var btn  = document.getElementById('srvBtn');
+  var fb   = document.getElementById('srvFb');
+  var checks = Array.prototype.slice.call(document.querySelectorAll('.srv__input'));
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function updateBtn(){
+    var any = checks.some(function(c){ return c.checked; });
+    btn.disabled = !any;
+    btn.setAttribute('aria-disabled', String(!any));
+  }
+
+  checks.forEach(function(c){ c.addEventListener('change', updateBtn); });
+
+  btn.addEventListener('click', function(){
+    btn.disabled = true;
+
+    /* фидбек наследует высоту опроса — экраны одинаковые */
+    fb.style.minHeight = srv.offsetHeight + 'px';
+
+    if (reduced){ srv.hidden = true; fb.hidden = false; return; }
+
+    srv.classList.add('srv-leave');
+    setTimeout(function(){
+      srv.hidden = true;
+      srv.classList.remove('srv-leave');
+      fb.hidden = false;
+      fb.classList.add('srv-fb-appear');
+      fb.addEventListener('animationend', function(){
+        fb.classList.remove('srv-fb-appear');
+      }, { once:true });
+    }, 200);
+  });
+
+  updateBtn();
+})();
+</script>
+</body>
+</html>
