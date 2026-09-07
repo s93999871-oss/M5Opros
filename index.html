@@ -110,7 +110,7 @@ body{
 
 .srv-fb__tools{ list-style:none; margin:0; padding:0; }
 .srv-fb__tool{
-  display:grid; grid-template-columns:auto 1fr;
+  display:grid; grid-template-columns:auto 1fr auto;
   gap:14px; align-items:start; padding:14px 6px;
 }
 .srv-fb__tool + .srv-fb__tool{ border-top:1px solid var(--line); }
@@ -118,10 +118,17 @@ body{
   font-weight:800; font-size:13px; letter-spacing:.08em;
   color:var(--muted); padding-top:3px; white-space:nowrap;
 }
-.srv-fb__text{ margin:0; max-width:64ch; }
+.srv-fb__text{ margin:0; max-width:62ch; }
+.srv-fb__yours{
+  font-size:13px; font-weight:700; color:var(--accent);
+  padding-top:3px; white-space:nowrap;
+  animation:fbIn 250ms ease both;
+}
 
 @media (max-width:560px){
   body{ padding:16px; }
+  .srv-fb__tool{ grid-template-columns:auto 1fr; }
+  .srv-fb__yours{ grid-column:2; padding-top:0; }
   .srv__btn{ width:100%; }
 }
 @media (prefers-reduced-motion:reduce){
@@ -143,37 +150,37 @@ body{
 
     <ul class="srv__list">
       <li class="srv__item"><label>
-        <input class="srv__input" type="checkbox">
+        <input class="srv__input" type="checkbox" data-problem="ch1">
         <span class="srv__box" aria-hidden="true"></span>
         <span class="srv__text">Нужно что-то посчитать в таблице — сумму, количество, проценты —
           но не знаю, как это сделать формулой;</span>
       </label></li>
       <li class="srv__item"><label>
-        <input class="srv__input" type="checkbox">
+        <input class="srv__input" type="checkbox" data-problem="ch1">
         <span class="srv__box" aria-hidden="true"></span>
         <span class="srv__text">Избегаю задач в Excel, потому что боюсь сломать таблицу или получить
           неправильный результат;</span>
       </label></li>
       <li class="srv__item"><label>
-        <input class="srv__input" type="checkbox">
+        <input class="srv__input" type="checkbox" data-problem="ch2">
         <span class="srv__box" aria-hidden="true"></span>
         <span class="srv__text">Вижу формулы в чужих файлах и не понимаю, что они делают и откуда
           берутся цифры;</span>
       </label></li>
       <li class="srv__item"><label>
-        <input class="srv__input" type="checkbox">
+        <input class="srv__input" type="checkbox" data-problem="ch1">
         <span class="srv__box" aria-hidden="true"></span>
         <span class="srv__text">Трачу часы на приведение данных к порядку: ФИО в разном виде,
           телефоны в разных форматах, даты без стандарта;</span>
       </label></li>
       <li class="srv__item"><label>
-        <input class="srv__input" type="checkbox">
+        <input class="srv__input" type="checkbox" data-problem="ch3">
         <span class="srv__box" aria-hidden="true"></span>
         <span class="srv__text">Забываю, где в Word нужные функции: оглавление, нумерация страниц,
           колонтитулы, альбомная страница;</span>
       </label></li>
       <li class="srv__item"><label>
-        <input class="srv__input" type="checkbox">
+        <input class="srv__input" type="checkbox" data-problem="ch3">
         <span class="srv__box" aria-hidden="true"></span>
         <span class="srv__text">Делаю оформление вручную, потому что не знаю автоматических способов.</span>
       </label></li>
@@ -182,26 +189,29 @@ body{
     <button class="srv__btn" id="srvBtn" type="button" disabled aria-disabled="true">Показать решение</button>
   </section>
 
-  <!-- ШАГ 2: три главы, без доп. ОС -->
+  <!-- ШАГ 2: три главы + метки «твой запрос» -->
   <section class="srv-fb" id="srvFb" hidden aria-label="Главы модуля">
     <p class="srv__overline" style="margin:0 0 12px;">Фидбек<span class="rdot" aria-hidden="true"></span></p>
     <p class="srv-fb__lead">Каждая сложность закрывается своей главой модуля:</p>
 
     <ul class="srv-fb__tools">
-      <li class="srv-fb__tool">
+      <li class="srv-fb__tool" data-tags="ch1">
         <span class="srv-fb__num">01<span class="rdot" aria-hidden="true"></span></span>
         <p class="srv-fb__text"><strong>Глава 1. Как перевести рабочую задачу в формулу?</strong> —
           составление формул в Excel и приведение данных к единому виду;</p>
+        <span class="srv-fb__yours" hidden>твой запрос</span>
       </li>
-      <li class="srv-fb__tool">
+      <li class="srv-fb__tool" data-tags="ch2">
         <span class="srv-fb__num">02<span class="rdot" aria-hidden="true"></span></span>
         <p class="srv-fb__text"><strong>Глава 2. Формула под микроскопом</strong> — разбор готовых
           формул, их улучшение и исправление ошибок;</p>
+        <span class="srv-fb__yours" hidden>твой запрос</span>
       </li>
-      <li class="srv-fb__tool">
+      <li class="srv-fb__tool" data-tags="ch3">
         <span class="srv-fb__num">03<span class="rdot" aria-hidden="true"></span></span>
         <p class="srv-fb__text"><strong>Глава 3. Где эта кнопка?</strong> — оформление документов
           и работа с интерфейсом Word.</p>
+        <span class="srv-fb__yours" hidden>твой запрос</span>
       </li>
     </ul>
   </section>
@@ -216,6 +226,7 @@ body{
   var btn  = document.getElementById('srvBtn');
   var fb   = document.getElementById('srvFb');
   var checks = Array.prototype.slice.call(document.querySelectorAll('.srv__input'));
+  var tools  = Array.prototype.slice.call(document.querySelectorAll('.srv-fb__tool'));
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function updateBtn(){
@@ -224,9 +235,21 @@ body{
     btn.setAttribute('aria-disabled', String(!any));
   }
 
+  /* метки «твой запрос» по отмеченным сложностям */
+  function updateYours(){
+    var picked = checks.filter(function(c){ return c.checked; })
+                       .map(function(c){ return c.getAttribute('data-problem'); });
+    tools.forEach(function(t){
+      var tags = (t.getAttribute('data-tags') || '').split(' ');
+      var mine = tags.some(function(tag){ return picked.indexOf(tag) !== -1; });
+      t.querySelector('.srv-fb__yours').hidden = !mine;
+    });
+  }
+
   checks.forEach(function(c){ c.addEventListener('change', updateBtn); });
 
   btn.addEventListener('click', function(){
+    updateYours();
     btn.disabled = true;
 
     /* фидбек наследует высоту опроса — экраны одинаковые */
